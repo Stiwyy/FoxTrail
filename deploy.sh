@@ -11,9 +11,6 @@ fi
 COMMIT_MSG="$1"
 rm -rf dist
 npm run build
-rm -rf docs
-mkdir docs
-cp -r dist/* docs/
 git add .
 git commit -m "$COMMIT_MSG"
 git push
