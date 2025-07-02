@@ -1,144 +1,192 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useFoxTrail } from '../FoxTrailContext';
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useFoxTrail } from '../FoxTrailContext'
 
 const steps = [
-    // Part 1: Story – Der Tatort
     {
         id: 'story-1',
         type: 'story',
         content:
-            'Es ist ein nebliger Morgen im BBW. Die oberste Etage ist abgesperrt, die Polizei abgezogen. Ein Mann wurde ermordet – erstochen mit einem auffällig geschmückten Dolch. Du betrittst den Tatort als Ermittler auf eigene Faust. Der Raum wirkt aufgeräumt – zu aufgeräumt. Keine Fingerabdrücke. Keine Kampfspuren. Nur der Dolch liegt noch da – ein Stück, das fast wie aus einem Museum wirkt.',
+            'Es ist ein nebliger Morgen im BBW. Die oberste Etage ist abgesperrt. Ein Mann wurde ermordet – erstochen mit einem auffällig geschmückten Dolch.',
+        hints: [
+            { type: 'text', content: 'Der Dolch sieht antik aus.' },
+            { type: 'image', content: '/images/dolch.jpg' }
+        ]
     },
-    // Frage 1 – Hinweis im Klassenzimmer
     {
         id: 'q-1',
         type: 'question',
         riddle:
-            'An der Wand hängt ein Plakat: "Die Geschichte der digitalen Evolution". Ein Eintrag wirkt seltsam deplatziert und enthält eine auffällige Grafik. Welches berühmte Kunstwerk wird dort angedeutet?',
+            'An der Wand hängt ein Plakat zur digitalen Evolution. Welches Kunstwerk wird angedeutet?',
         solution: 'Die Erschaffung Adams',
+        hints: [{ type: 'text', content: 'Denke an Michelangelo.' }]
     },
-    // Part 2: Story – Ein Geistesblitz
     {
         id: 'story-2',
         type: 'story',
         content:
-            'Die Grafik lässt dich stutzen – sie erinnert dich an ein weltbekanntes Kunstwerk. Und plötzlich macht es Klick: Es gab doch kürzlich einen Einbruch im Kunstmuseum Winterthur. Ein antiker Dolch wurde gestohlen. Ist das etwa... derselbe? Du verlässt das BBW und machst dich auf den Weg ins Museum.',
+            'Du verlässt das BBW und gehst zum Museum. Die Eingangstür steht weit offen.',
+        hints: []
     },
-    // Part 3: Story – Ankunft im Museum
+    {
+        id: 'q-2',
+        type: 'question',
+        riddle: 'Was steht auf der Inschrift der Statue?',
+        solution: 'Sapientia',
+        hints: [{ type: 'text', content: 'Latein für Weisheit.' }]
+    },
     {
         id: 'story-3',
         type: 'story',
         content:
-            'Das Museum wirkt ruhig, doch die Sicherheitsvorkehrungen wurden offensichtlich verschärft. Du wirst zum Direktor geführt, der dich prüfend mustert. Als du vom Dolch sprichst, wird sein Blick schärfer. "Informationen sind kostbar", sagt er. "Bevor ich Ihnen etwas verrate, müssen Sie zeigen, dass Sie Augen für Details haben..."',
-    },
-    // Frage 2 – Die Statue im Museum
-    {
-        id: 'q-2',
-        type: 'question',
-        riddle:
-            'Der Direktor fordert dich auf, die Inschrift auf dem Buch der unteren linken Statue aussem beim Eingang zu lesen. Was steht dort?',
-        solution: 'Sapientia',
-    },
-    // Part 4: Story – Die nächste Spur
-    {
-        id: 'story-4',
-        type: 'story',
-        content:
-            'Der Direktor nickt langsam. "Sehr gut", sagt er. "Nur wer Details erkennt, findet die Wahrheit." Er führt dich in ein Hinterzimmer, wo sich ein altes Verzeichnis der Sonderausstellung befindet. Einige Seiten fehlen. Einer der vermissten Gegenstände: Ein Ritualdolch aus dem 16. Jahrhundert. Der Titel der Sammlung: "Die Schatten der Menschheit".',
-    },
-];
+            'Du findest ein altes Verzeichnis der Sonderausstellung mit fehlenden Seiten.',
+        hints: []
+    }
+]
 
 export default function Trail() {
-    const { started, setStarted, setSolved } = useFoxTrail();
-    const [index, setIndex] = useState(0);
-    const [input, setInput] = useState('');
-    const [notes, setNotes] = useState('');
-    const [showNotes, setShowNotes] = useState(true);
-    const navigate = useNavigate();
+    const { started, setStarted, setSolved } = useFoxTrail()
+    const [index, setIndex] = useState(0)
+    const [input, setInput] = useState('')
+    const [notes, setNotes] = useState('')
+    const [showNotes, setShowNotes] = useState(true)
+    const [collectedHints, setCollectedHints] = useState([])
+    const [showHints, setShowHints] = useState(false)
+    const navigate = useNavigate()
 
     useEffect(() => {
-        if (!started) setStarted(true);
-    }, [started, setStarted]);
+        if (!started) setStarted(true)
+    }, [started, setStarted])
 
-    const step = steps[index];
+    useEffect(() => {
+        const hints = steps[index].hints || []
+        if (hints.length) {
+            setCollectedHints(prev => {
+                const newOnes = hints.filter(
+                    h => !prev.some(p => p.content === h.content)
+                )
+                return [...prev, ...newOnes]
+            })
+        }
+    }, [index])
 
     const goNext = () => {
-        if (step.type === 'question') {
-            if (input.trim() !== step.solution) {
-                alert('Falsche Antwort. Versuch es nochmal!');
-                return;
+        if (steps[index].type === 'question') {
+            if (input.trim() !== steps[index].solution) {
+                alert('Falsche Antwort')
+                return
             }
-            setInput('');
+            setInput('')
         }
-        const next = index + 1;
+        const next = index + 1
         if (next < steps.length) {
-            setIndex(next);
+            setIndex(next)
         } else {
-            setSolved(true);
-            navigate('/result');
+            setSolved(true)
+            navigate('/result')
         }
-    };
+    }
 
     const goBack = () => {
-        if (index > 0) setIndex(index - 1);
-    };
+        if (index > 0) setIndex(index - 1)
+    }
 
     return (
-        <div className="container" style={{ position: 'relative' }}>
-            {/* Schrittanzeige */}
-            <h2 className="step-title">
-                Schritt {index + 1} von {steps.length}
-            </h2>
+        <>
+            <div className="container" style={{ position: 'relative' }}>
+                <h2 className="step-title">
+                    Schritt {index + 1} von {steps.length}
+                </h2>
 
-            {/* Story oder Frage */}
-            {step.type === 'story' ? (
-                <p className="text">{step.content}</p>
-            ) : (
-                <>
-                    <p className="text">{step.riddle}</p>
-                    <input
-                        className="input"
-                        type="text"
-                        placeholder="Antwort eingeben"
-                        value={input}
-                        onChange={e => setInput(e.target.value)}
-                    />
-                </>
-            )}
+                {steps[index].type === 'story' ? (
+                    <p className="text">{steps[index].content}</p>
+                ) : (
+                    <>
+                        <p className="text">{steps[index].riddle}</p>
+                        <input
+                            className="input"
+                            type="text"
+                            placeholder="Antwort eingeben"
+                            value={input}
+                            onChange={e => setInput(e.target.value)}
+                        />
+                    </>
+                )}
 
-            {/* Notizblock-Toggle */}
-            <button
-                className="notes-toggle-button"
-                onClick={() => setShowNotes(v => !v)}
-                aria-label={showNotes ? 'Notizen schließen' : 'Notizen öffnen'}
-            >
-                {showNotes ? '🗒️' : '✏️'}
-            </button>
-
-            {/* Notizblock */}
-            {showNotes && (
-                <textarea
-                    className="notes"
-                    placeholder="Deine Notizen..."
-                    value={notes}
-                    onChange={e => setNotes(e.target.value)}
-                />
-            )}
-
-            {/* Navigation */}
-            <div style={{ marginTop: '20px' }}>
-                <button
-                    className="map-toggle-button"
-                    onClick={goBack}
-                    disabled={index === 0}
+                <div
+                    style={{
+                        marginTop: 20,
+                        display: 'flex',
+                        gap: 8,
+                        flexWrap: 'wrap'
+                    }}
                 >
-                    ← Zurück
-                </button>
-                <button className="button" onClick={goNext} style={{ marginLeft: 8 }}>
-                    {index + 1 < steps.length ? 'Weiter →' : 'Fertig'}
-                </button>
+                    <button
+                        className="map-toggle-button"
+                        onClick={goBack}
+                        disabled={index === 0}
+                    >
+                        ← Zurück
+                    </button>
+
+                    <button className="button" onClick={goNext}>
+                        {index + 1 < steps.length ? 'Weiter →' : 'Fertig'}
+                    </button>
+
+                    {collectedHints.length > 0 && (
+                        <button
+                            className="hint-toggle-button"
+                            onClick={() => setShowHints(true)}
+                        >
+                            💡 {collectedHints.length}
+                        </button>
+                    )}
+
+                    <button
+                        className="notes-toggle-button"
+                        onClick={() => setShowNotes(v => !v)}
+                        aria-label={showNotes ? 'Notizen schliessen' : 'Notizen oeffnen'}
+                    >
+                        {showNotes ? '🗒️' : '✏️'}
+                    </button>
+                </div>
+
+                {showNotes && (
+                    <textarea
+                        className="notes"
+                        placeholder="Deine Notizen..."
+                        value={notes}
+                        onChange={e => setNotes(e.target.value)}
+                    />
+                )}
             </div>
-        </div>
-    );
+
+            {showHints && (
+                <div className="modal-overlay" onClick={() => setShowHints(false)}>
+                    <div className="modal-content" onClick={e => e.stopPropagation()}>
+                        <button className="modal-close" onClick={() => setShowHints(false)}>
+                            ✕
+                        </button>
+                        <h3>Hinweise</h3>
+                        <div className="hints-list">
+                            {collectedHints.map((h, i) =>
+                                h.type === 'text' ? (
+                                    <p key={i} className="hint-text">
+                                        • {h.content}
+                                    </p>
+                                ) : (
+                                    <img
+                                        key={i}
+                                        src={h.content}
+                                        alt={`Hinweis ${i + 1}`}
+                                        className="hint-image"
+                                    />
+                                )
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+        </>
+    )
 }
