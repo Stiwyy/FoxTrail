@@ -252,3 +252,74 @@ body.dark .modal-content {
 body.dark .hint-image {
   border: 1px solid #444;
 }
+
+.container {
+  animation: fadeIn 0.5s ease-out both;
+}
+
+.step-title {
+  animation: slideIn 0.5s ease-out both;
+}
+
+.text {
+  animation: fadeIn 0.6s ease-out both;
+}
+
+.input:focus {
+  outline: none;
+  box-shadow: 0 0 8px rgba(230, 126, 34, 0.7);
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.button:hover,
+.map-toggle-button:hover,
+.notes-toggle-button:hover,
+.hint-toggle-button:hover {
+  animation: pulse 0.6s ease-in-out infinite alternate;
+}
+
+.modal-overlay {
+  animation: fadeIn 0.3s ease-out both;
+}
+
+.modal-content {
+  animation: popIn 0.4s cubic-bezier(0.2, 1, 0.3, 1) both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse {
+  from {
+    transform: scale(1);
+    box-shadow: 0 0 4px rgba(0,0,0,0.1);
+  }
+  to {
+    transform: scale(1.05);
+    box-shadow: 0 0 12px rgba(0,0,0,0.15);
+  }
+}
