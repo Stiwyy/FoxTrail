@@ -147,3 +147,22 @@ body.dark .darkmode-toggle {
   background: #eee;
   color: #000;
 }
+.notes {
+  width: 100%;
+  min-height: 120px;
+  padding: 12px;
+  margin-top: 20px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fffbe6;
+  font-family: 'Courier New', monospace;
+  font-size: 15px;
+  line-height: 1.4;
+  resize: vertical;
+}
+
+body.dark .notes {
+  background: #2a2a1e;
+  border: 1px solid #444;
+  color: #f5f5d5;
+}
