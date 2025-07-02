@@ -2,88 +2,114 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFoxTrail } from '../FoxTrailContext';
 
-const stations = [
+const steps = [
+    // Part 1: Story
     {
-        id: 1,
-        title: 'Station 1: Alte Brücke',
+        id: 'story-1',
+        type: 'story',
+        content: 'Du stehst am Rande der alten Brücke. Nebelschwaden ziehen über das Wasser...',
+    },
+    // Frage 1
+    {
+        id: 'q-1',
+        type: 'question',
         riddle: 'Zähle die Löwen an der Brücke und bilde die Quersumme.',
         solution: '6',
     },
+    // Part 2: Story
     {
-        id: 2,
-        title: 'Station 2: Rathausplatz',
+        id: 'story-2',
+        type: 'story',
+        content: 'Die Löwen brüllen in deinem Kopf, als du den nächsten Pfad betrittst...',
+    },
+    // Frage 2
+    {
+        id: 'q-2',
+        type: 'question',
         riddle: 'Wie viele Fenster hat die Rathausfassade?',
         solution: '12',
+    },
+    // Part 3: Story Abschluss
+    {
+        id: 'story-3',
+        type: 'story',
+        content: 'Ein letzter Lichtstrahl fällt auf das Ziel – Du hast es fast geschafft!',
     },
 ];
 
 export default function Trail() {
     const { started, setStarted, setSolved } = useFoxTrail();
-    const [current, setCurrent] = useState(0);
+    const [index, setIndex] = useState(0);
     const [input, setInput] = useState('');
-    const [showMap, setShowMap] = useState(false);
+    const [historyMax, setHistoryMax] = useState(0);
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (!started) {
-            setStarted(true);
-        }
+        if (!started) setStarted(true);
     }, [started, setStarted]);
 
-    const checkSolution = () => {
-        if (input.trim() === stations[current].solution) {
-            if (current + 1 === stations.length) {
-                setSolved(true);
-                navigate('/result');
-            } else {
-                setCurrent(current + 1);
-                setInput('');
+    const step = steps[index];
+
+    const goNext = () => {
+        if (step.type === 'question') {
+            if (input.trim() !== step.solution) {
+                alert('Falsche Antwort. Versuch es nochmal!');
+                return;
             }
-        } else {
-            alert('Falsche Antwort. Versuch es nochmal!');
+            setInput('');
         }
+        const next = index + 1;
+        if (next < steps.length) {
+            setIndex(next);
+            setHistoryMax(prev => Math.max(prev, next));
+        } else {
+            // Ende erreicht
+            setSolved(true);
+            navigate('/result');
+        }
+    };
+
+    const goBack = () => {
+        if (index === 0) return;
+        setIndex(index - 1);
     };
 
     return (
         <div className="container">
-            <h2 className="subtitle">{stations[current].title}</h2>
-            <p className="text">{stations[current].riddle}</p>
-            <input
-                type="text"
-                className="input"
-                placeholder="Antwort"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-            />
+            {step.type === 'story' ? (
+                <>
+                    <p className="text">{step.content}</p>
+                </>
+            ) : (
+                <>
+                    <p className="text">{step.riddle}</p>
+                    <input
+                        className="input"
+                        type="text"
+                        placeholder="Antwort eingeben"
+                        value={input}
+                        onChange={e => setInput(e.target.value)}
+                    />
+                </>
+            )}
 
-            <button className="button" onClick={checkSolution}>
-                Antwort prüfen
-            </button>
-
-            {current < stations.length && (
+            <div style={{ marginTop: '20px' }}>
                 <button
                     className="map-toggle-button"
-                    onClick={() => setShowMap(!showMap)}
+                    onClick={goBack}
+                    disabled={index === 0}
                 >
-                    {showMap ? 'Karte ausblenden' : 'Karte anzeigen'}
+                    ← Zurück
                 </button>
-            )}
 
-            {showMap && (
-                <iframe
-                    title="Winterthur Karte"
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2727.5672781572953!2d8.7166667!3d47.4980095!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x479aa06856be3959%3A0xdea5e8816cf3f969!2sWinterthur!5e0!3m2!1sde!2sch!4v1627398910996!5m2!1sde!2sch"
-                    width="100%"
-                    height="300"
-                    style={{
-                        border: 0,
-                        borderRadius: '8px',
-                        marginTop: '16px',
-                    }}
-                    allowFullScreen=""
-                    loading="lazy"
-                />
-            )}
+                <button
+                    className="button"
+                    onClick={goNext}
+                    style={{ marginLeft: '8px' }}
+                >
+                    {index + 1 < steps.length ? 'Weiter →' : 'Fertig'}
+                </button>
+            </div>
         </div>
     );
 }
