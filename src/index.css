@@ -1,43 +1,90 @@
 body {
   margin: 0;
-  font-family: sans-serif;
+  font-family: system-ui, sans-serif;
   background: #f0f0f0;
   color: #222;
+  transition: background 0.3s, color 0.3s;
+}
+
+.container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2 {
+  margin-bottom: 10px;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background: #fff;
+  color: #000;
+}
+
+button {
+  padding: 10px 16px;
+  font-size: 14px;
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+button:hover {
+  background-color: #2980b9;
 }
 
 body.dark {
   background: #121212;
-  color: #f5f5f5;
+  color: #eee;
 }
 
-input, button {
-  transition: all 0.2s ease;
+body.dark .container {
+  background: #1e1e1e;
+  box-shadow: 0 2px 10px rgba(255, 255, 255, 0.05);
 }
 
 body.dark input {
-  background: #1e1e1e;
-  color: #fff;
+  background: #2a2a2a;
+  color: #f5f5f5;
   border: 1px solid #555;
 }
 
 body.dark button {
-  background: #333;
+  background-color: #444;
   color: #fff;
 }
+
+body.dark button:hover {
+  background-color: #666;
+}
+
 .darkmode-toggle {
   position: fixed;
-  top: 10px;
-  right: 10px;
-  z-index: 999;
-  background: #444;
+  top: 12px;
+  right: 12px;
+  z-index: 1000;
+  background: #333;
   color: #fff;
   border: none;
   padding: 8px 12px;
+  font-size: 13px;
   border-radius: 5px;
   cursor: pointer;
 }
 
 body.dark .darkmode-toggle {
-  background: #f5f5f5;
+  background: #eee;
   color: #000;
 }
