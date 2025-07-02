@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Page.css';
 
 const stations = [
     {
@@ -43,10 +42,11 @@ export default function Trail() {
             <input
                 type="text"
                 className="input"
-                placeholder="Antwort eingeben..."
+                placeholder="Antwort"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
             />
+
             <button className="button" onClick={checkSolution}>
                 Antwort prüfen
             </button>
@@ -54,6 +54,7 @@ export default function Trail() {
             <button className="map-toggle-button" onClick={() => setShowMap(!showMap)}>
                 {showMap ? 'Karte ausblenden' : 'Karte anzeigen'}
             </button>
+
 
             {showMap && (
                 <iframe

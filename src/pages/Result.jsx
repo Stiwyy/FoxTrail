@@ -1,5 +1,3 @@
-import './Page.css';
-
 export default function Result() {
     return (
         <div className="container">
