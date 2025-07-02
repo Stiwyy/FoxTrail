@@ -1,15 +1,24 @@
 import { useNavigate } from 'react-router-dom';
+import { useFoxTrail } from '../FoxTrailContext';
 
-export default function Home() {
+function Home() {
+    const { setStarted } = useFoxTrail();
     const navigate = useNavigate();
+
+    const handleStart = () => {
+        setStarted(true);
+        navigate('/trail');
+    };
 
     return (
         <div className="container">
-            <h1 className="title">Willkommen zum Foxtrail!</h1>
-            <p className="text">Mach dich bereit für ein spannendes Abenteuer.</p>
-            <button className="button" onClick={() => navigate('/trail')}>
-                Starte den Trail
+            <h1 className="title">Willkommen beim FoxTrail!</h1>
+            <p className="text">Drücke den Knopf unten, um den Trail zu starten.</p>
+            <button className="button" onClick={handleStart}>
+                FoxTrail starten
             </button>
         </div>
     );
 }
+
+export default Home;
