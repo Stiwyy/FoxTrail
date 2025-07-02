@@ -70,6 +70,8 @@ export default function Trail() {
         }
     }, [index])
 
+    const progress = ((index + 1) / steps.length) * 100;
+
     const goNext = () => {
         if (steps[index].type === 'question') {
             if (input.trim() !== steps[index].solution) {
@@ -94,15 +96,19 @@ export default function Trail() {
     return (
         <>
             <div className="container" style={{ position: 'relative' }}>
-                <h2 className="step-title">
-                    Schritt {index + 1} von {steps.length}
-                </h2>
+                {/* Progress Bar */}
+                <div className="progress-wrapper">
+                    <div
+                        className="progress-bar"
+                        style={{ width: `${((index + 1) / steps.length) * 100}%` }}
+                    />
+                </div>
 
-                {steps[index].type === 'story' ? (
-                    <p className="text">{steps[index].content}</p>
+                {step.type === 'story' ? (
+                    <p className="text">{step.content}</p>
                 ) : (
                     <>
-                        <p className="text">{steps[index].riddle}</p>
+                        <p className="text">{step.riddle}</p>
                         <input
                             className="input"
                             type="text"
@@ -164,7 +170,10 @@ export default function Trail() {
             {showHints && (
                 <div className="modal-overlay" onClick={() => setShowHints(false)}>
                     <div className="modal-content" onClick={e => e.stopPropagation()}>
-                        <button className="modal-close" onClick={() => setShowHints(false)}>
+                        <button
+                            className="modal-close"
+                            onClick={() => setShowHints(false)}
+                        >
                             ✕
                         </button>
                         <h3>Hinweise</h3>
@@ -189,4 +198,5 @@ export default function Trail() {
             )}
         </>
     )
+
 }
