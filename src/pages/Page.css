@@ -49,3 +49,18 @@
 .success {
     color: #27ae60;
 }
+.map-toggle-button {
+    margin-top: 10px;
+    background-color: #2980b9;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.map-toggle-button:hover {
+    background-color: #2471a3;
+}
+
