@@ -53,6 +53,7 @@ export default function Trail() {
     const [collectedHints, setCollectedHints] = useState([])
     const [showHints, setShowHints] = useState(false)
     const navigate = useNavigate()
+    const [showMap, setShowMap] = useState(false)
 
     useEffect(() => {
         if (!started) setStarted(true)
@@ -72,7 +73,6 @@ export default function Trail() {
 
     const progress = ((index + 1) / steps.length) * 100;
     const step = steps[index]
-
 
     const goNext = () => {
         if (steps[index].type === 'question') {
@@ -97,7 +97,26 @@ export default function Trail() {
 
     return (
         <>
-            <div className="container" style={{ position: 'relative' }}>
+            <div className="container">
+                {/* Header mit Utility Buttons */}
+                <div className="header-toolbar">
+                    <button
+                        className="notes-toggle-button"
+                        onClick={() => setShowNotes(v => !v)}
+                        aria-label={showNotes ? 'Notizen schließen' : 'Notizen öffnen'}
+                    >
+                        {showNotes ? '🗒️' : '✏️'}
+                    </button>
+                    {collectedHints.length > 0 && (
+                        <button
+                            className="hint-toggle-button"
+                            onClick={() => setShowHints(true)}
+                        >
+                            💡 {collectedHints.length}
+                        </button>
+                    )}
+                </div>
+
                 <div className="progress-wrapper">
                     <div
                         className="progress-bar"
@@ -120,44 +139,31 @@ export default function Trail() {
                     </>
                 )}
 
-                <div
-                    style={{
-                        marginTop: 20,
-                        display: 'flex',
-                        gap: 8,
-                        flexWrap: 'wrap'
-                    }}
-                >
+                {/* Karte anzeigen Button */}
+                <div className="map-section">
                     <button
                         className="map-toggle-button"
-                        onClick={goBack}
-                        disabled={index === 0}
+                        onClick={() => setShowMap(v => !v)}
                     >
-                        ← Zurück
-                    </button>
-
-                    <button className="button" onClick={goNext}>
-                        {index + 1 < steps.length ? 'Weiter →' : 'Fertig'}
-                    </button>
-
-                    {collectedHints.length > 0 && (
-                        <button
-                            className="hint-toggle-button"
-                            onClick={() => setShowHints(true)}
-                        >
-                            💡 {collectedHints.length}
-                        </button>
-                    )}
-
-                    <button
-                        className="notes-toggle-button"
-                        onClick={() => setShowNotes(v => !v)}
-                        aria-label={showNotes ? 'Notizen schliessen' : 'Notizen oeffnen'}
-                    >
-                        {showNotes ? '🗒️' : '✏️'}
+                        {showMap ? '📍 Karte verbergen' : '🗺️ Karte anzeigen'}
                     </button>
                 </div>
 
+                {showMap && (
+                    <div className="map-container">
+                        <iframe
+                            title="Winterthur Karte"
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2727.5672781572953!2d8.7166667!3d47.4980095!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x479aa06856be3959%3A0xdea5e8816cf3f969!2sWinterthur!5e0!3m2!1sde!2sch!4v1627398910996!5m2!1sde!2sch"
+                            width="100%"
+                            height="240"
+                            style={{ border: 0, borderRadius: 8 }}
+                            allowFullScreen
+                            loading="lazy"
+                        />
+                    </div>
+                )}
+
+                {/* Notizen */}
                 {showNotes && (
                     <textarea
                         className="notes"
@@ -166,6 +172,20 @@ export default function Trail() {
                         onChange={e => setNotes(e.target.value)}
                     />
                 )}
+
+                {/* Navigation Buttons - am Ende */}
+                <div className="navigation-toolbar">
+                    <button
+                        className="back-button"
+                        onClick={goBack}
+                        disabled={index === 0}
+                    >
+                        ← Zurück
+                    </button>
+                    <button className="next-button" onClick={goNext}>
+                        {index + 1 < steps.length ? 'Weiter →' : 'Fertig'}
+                    </button>
+                </div>
             </div>
 
             {showHints && (
@@ -199,6 +219,4 @@ export default function Trail() {
             )}
         </>
     )
-
-
 }
