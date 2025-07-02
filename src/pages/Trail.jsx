@@ -43,12 +43,13 @@ const steps = [
     },
 ];
 
+
 export default function Trail() {
     const { started, setStarted, setSolved } = useFoxTrail();
     const [index, setIndex] = useState(0);
     const [input, setInput] = useState('');
     const [notes, setNotes] = useState('');
-    const [historyMax, setHistoryMax] = useState(0);
+    const [showNotes, setShowNotes] = useState(true);   // neu: toggle für Notizen
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -68,17 +69,14 @@ export default function Trail() {
         const next = index + 1;
         if (next < steps.length) {
             setIndex(next);
-            setHistoryMax(prev => Math.max(prev, next));
         } else {
-            // Ende erreicht
             setSolved(true);
             navigate('/result');
         }
     };
 
     const goBack = () => {
-        if (index === 0) return;
-        setIndex(index - 1);
+        if (index > 0) setIndex(index - 1);
     };
 
     return (
@@ -98,12 +96,23 @@ export default function Trail() {
                 </>
             )}
 
-            <textarea
-                className="notes"
-                placeholder="Deine Notizen..."
-                value={notes}
-                onChange={e => setNotes(e.target.value)}
-            />
+            {/* Notizblock-Toggle */}
+            <button
+                className="notes-toggle-button"
+                onClick={() => setShowNotes(v => !v)}
+                aria-label={showNotes ? 'Notizen schließen' : 'Notizen öffnen'}
+            >
+                {showNotes ? '🗒️' : '✏️'}
+            </button>
+
+            {showNotes && (
+                <textarea
+                    className="notes"
+                    placeholder="Deine Notizen..."
+                    value={notes}
+                    onChange={e => setNotes(e.target.value)}
+                />
+            )}
 
             <div style={{ marginTop: '20px' }}>
                 <button
@@ -113,7 +122,6 @@ export default function Trail() {
                 >
                     ← Zurück
                 </button>
-
                 <button
                     className="button"
                     onClick={goNext}
