@@ -71,10 +71,12 @@ export default function Trail() {
     }, [index])
 
     const progress = ((index + 1) / steps.length) * 100;
+    const step = steps[index]
+
 
     const goNext = () => {
         if (steps[index].type === 'question') {
-            if (input.trim() !== steps[index].solution) {
+            if (input.trim().toLowerCase() !== steps[index].solution.toLowerCase()) {
                 alert('Falsche Antwort')
                 return
             }
@@ -96,7 +98,6 @@ export default function Trail() {
     return (
         <>
             <div className="container" style={{ position: 'relative' }}>
-                {/* Progress Bar */}
                 <div className="progress-wrapper">
                     <div
                         className="progress-bar"
@@ -198,5 +199,6 @@ export default function Trail() {
             )}
         </>
     )
+
 
 }
