@@ -95,6 +95,12 @@ export default function Trail() {
         if (index > 0) setIndex(index - 1)
     }
 
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter' && steps[index].type === 'question') {
+            goNext();
+        }
+    };
+
     return (
         <>
             <div className="container">
@@ -135,6 +141,7 @@ export default function Trail() {
                             placeholder="Antwort eingeben"
                             value={input}
                             onChange={e => setInput(e.target.value)}
+                            onKeyPress={handleKeyPress}
                         />
                     </>
                 )}
