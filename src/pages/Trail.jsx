@@ -49,7 +49,7 @@ export default function Trail() {
     const [index, setIndex] = useState(0)
     const [input, setInput] = useState('')
     const [notes, setNotes] = useState('')
-    const [showNotes, setShowNotes] = useState(true)
+    const [showNotes, setShowNotes] = useState(false)
     const [collectedHints, setCollectedHints] = useState([])
     const [showHints, setShowHints] = useState(false)
     const navigate = useNavigate()
