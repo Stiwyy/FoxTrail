@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useFoxTrail } from '../FoxTrailContext'
-import Fuse from 'fuse.js' // Für die unscharfe Textsuche - installiere mit: npm install fuse.js
+import Fuse from 'fuse.js'
 
 const steps = [
     {
@@ -44,8 +44,6 @@ const steps = [
         hints: []
     }
 ]
-
-// Konstanten für localStorage-Schlüssel
 const STORAGE_KEY = 'foxTrail_progress';
 const TIMER_KEY = 'foxTrail_timer';
 
@@ -62,53 +60,67 @@ export default function Trail() {
     const [lastUpdateTime, setLastUpdateTime] = useState(new Date().toISOString())
 
     const [showTimer, setShowTimer] = useState(true)
-    const [startTime, setStartTime] = useState(null)
-    const [currentTime, setCurrentTime] = useState(0)
-    const [stepStartTime, setStepStartTime] = useState(null)
-    const [stepTimes, setStepTimes] = useState([])
+    const [totalSeconds, setTotalSeconds] = useState(0)
+    const [isActive, setIsActive] = useState(true)
+    const [stepStartTime, setStepStartTime] = useState(Date.now())
+    const [stepTimes, setStepTimes] = useState(Array(steps.length).fill(0))
+
+    const timerIntervalRef = useRef(null);
 
     useEffect(() => {
         try {
             const savedTimerData = localStorage.getItem(TIMER_KEY);
             if (savedTimerData) {
                 const timerData = JSON.parse(savedTimerData);
-                setStartTime(timerData.startTime);
-                setCurrentTime(timerData.currentTime || 0);
-                setStepTimes(timerData.stepTimes || []);
-                setStepStartTime(timerData.stepStartTime);
+                setTotalSeconds(timerData.totalSeconds || 0);
+                setStepTimes(timerData.stepTimes || Array(steps.length).fill(0));
                 setShowTimer(timerData.showTimer !== undefined ? timerData.showTimer : true);
+                setStepStartTime(Date.now());
             } else {
-                const now = Date.now();
-                setStartTime(now);
-                setStepStartTime(now);
+                setTotalSeconds(0);
                 setStepTimes(Array(steps.length).fill(0));
+                setStepStartTime(Date.now());
             }
+
+            setIsActive(true);
+
         } catch (error) {
             console.error('Fehler beim Laden der Timer-Daten:', error);
-            const now = Date.now();
-            setStartTime(now);
-            setStepStartTime(now);
+            setTotalSeconds(0);
             setStepTimes(Array(steps.length).fill(0));
+            setStepStartTime(Date.now());
+            setIsActive(true);
         }
 
-        const timerInterval = setInterval(() => {
-            if (startTime) {
-                const elapsed = Math.floor((Date.now() - startTime) / 1000);
-                setCurrentTime(elapsed);
+        return () => {
+            if (timerIntervalRef.current) {
+                clearInterval(timerIntervalRef.current);
             }
-        }, 1000);
-
-        return () => clearInterval(timerInterval);
+        };
     }, []);
 
     useEffect(() => {
-        if (startTime) {
+        if (isActive) {
+            timerIntervalRef.current = setInterval(() => {
+                setTotalSeconds(seconds => seconds + 1);
+            }, 1000);
+        } else if (timerIntervalRef.current) {
+            clearInterval(timerIntervalRef.current);
+        }
+
+        return () => {
+            if (timerIntervalRef.current) {
+                clearInterval(timerIntervalRef.current);
+            }
+        };
+    }, [isActive]);
+
+    useEffect(() => {
+        if (isActive && started) {
             try {
                 const timerData = {
-                    startTime,
-                    currentTime,
+                    totalSeconds,
                     stepTimes,
-                    stepStartTime,
                     showTimer
                 };
                 localStorage.setItem(TIMER_KEY, JSON.stringify(timerData));
@@ -116,7 +128,7 @@ export default function Trail() {
                 console.error('Fehler beim Speichern der Timer-Daten:', error);
             }
         }
-    }, [currentTime, startTime, stepTimes, stepStartTime, showTimer]);
+    }, [totalSeconds, stepTimes, showTimer, isActive, started]);
 
     useEffect(() => {
         try {
@@ -182,7 +194,6 @@ export default function Trail() {
         if (stepStartTime && index > 0) {
             const timeSpent = Math.floor((Date.now() - stepStartTime) / 1000);
 
-            // Zeit für den vorherigen Schritt speichern
             setStepTimes(prev => {
                 const newTimes = [...prev];
                 newTimes[index - 1] = timeSpent;
@@ -205,7 +216,7 @@ export default function Trail() {
 
         const options = {
             includeScore: true,
-            threshold: 0,
+            threshold: 0.4,
             keys: ['text']
         };
 
@@ -223,7 +234,6 @@ export default function Trail() {
             }
             setInput('');
         }
-
         if (stepStartTime) {
             const timeSpent = Math.floor((Date.now() - stepStartTime) / 1000);
             setStepTimes(prev => {
@@ -238,16 +248,14 @@ export default function Trail() {
             setIndex(next);
             setStepStartTime(Date.now());
         } else {
-            const totalTime = Math.floor((Date.now() - startTime) / 1000);
-
             setSolved(true);
-
+            setIsActive(false);
             try {
                 const finalTimerData = {
-                    startTime,
-                    endTime: Date.now(),
-                    totalTime,
-                    stepTimes
+                    totalSeconds,
+                    stepTimes,
+                    completed: true,
+                    completionTime: Date.now()
                 };
                 localStorage.setItem(TIMER_KEY, JSON.stringify(finalTimerData));
             } catch (error) {
@@ -277,18 +285,17 @@ export default function Trail() {
             setCollectedHints([]);
             setSolved(false);
 
-            const now = Date.now();
-            setStartTime(now);
-            setStepStartTime(now);
-            setCurrentTime(0);
+            setTotalSeconds(0);
             setStepTimes(Array(steps.length).fill(0));
+            setStepStartTime(Date.now());
+            setIsActive(true);
 
             alert('Fortschritt zurückgesetzt');
         }
     };
 
     const formatTime = (timeInSeconds) => {
-        if (!timeInSeconds && timeInSeconds !== 0) return "00:00";
+        if (timeInSeconds === undefined || timeInSeconds === null) return "00:00";
 
         const hours = Math.floor(timeInSeconds / 3600);
         const minutes = Math.floor((timeInSeconds % 3600) / 60);
@@ -298,6 +305,11 @@ export default function Trail() {
             return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         }
         return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    };
+
+    const getCurrentStepTime = () => {
+        if (!stepStartTime) return 0;
+        return Math.floor((Date.now() - stepStartTime) / 1000);
     };
 
     return (
@@ -341,11 +353,14 @@ export default function Trail() {
                 {showTimer && (
                     <div className="timer-display">
                         <div className="total-time">
-                            <span>Gesamtzeit:</span> {formatTime(currentTime)}
+                            <span>Gesamtzeit:</span> {formatTime(totalSeconds)}
                         </div>
-                        {stepTimes[index - 1] > 0 && (
-                            <div className="step-time">
-                                <span>Letzter Schritt:</span> {formatTime(stepTimes[index - 1])}
+                        <div className="step-time">
+                            <span>Aktueller Schritt:</span> {formatTime(getCurrentStepTime())}
+                        </div>
+                        {index > 0 && stepTimes[index-1] > 0 && (
+                            <div className="last-step-time">
+                                <span>Letzter Schritt:</span> {formatTime(stepTimes[index-1])}
                             </div>
                         )}
                     </div>
