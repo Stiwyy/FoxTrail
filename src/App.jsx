@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { FoxTrailProvider, useFoxTrail } from './FoxTrailContext';
 
 function App() {
-    const [dark, setDark] = useState(false);
+    const [dark, setDark] = useState(true);
 
     useEffect(() => {
         document.body.className = dark ? 'dark' : '';
