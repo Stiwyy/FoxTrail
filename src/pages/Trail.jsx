@@ -44,6 +44,8 @@ const steps = [
     }
 ]
 
+const STORAGE_KEY = 'foxTrail_progress';
+
 export default function Trail() {
     const { started, setStarted, setSolved } = useFoxTrail()
     const [index, setIndex] = useState(0)
@@ -54,6 +56,52 @@ export default function Trail() {
     const [showHints, setShowHints] = useState(false)
     const navigate = useNavigate()
     const [showMap, setShowMap] = useState(false)
+    const [lastUpdateTime, setLastUpdateTime] = useState(new Date().toISOString())
+
+    useEffect(() => {
+        try {
+            const savedProgress = localStorage.getItem(STORAGE_KEY);
+            if (savedProgress) {
+                const progress = JSON.parse(savedProgress);
+
+                setIndex(progress.index || 0);
+                setNotes(progress.notes || '');
+                setCollectedHints(progress.collectedHints || []);
+                setLastUpdateTime(progress.lastUpdateTime || new Date().toISOString());
+
+                if (progress.solved) {
+                    setSolved(true);
+                }
+
+                console.log(`Fortschritt geladen: Schritt ${progress.index + 1} von ${steps.length}`);
+            }
+        } catch (error) {
+            console.error('Fehler beim Laden des Fortschritts:', error);
+        }
+    }, [setSolved]);
+
+    useEffect(() => {
+        if (!started) return;
+
+        try {
+            const currentTime = new Date().toISOString();
+            setLastUpdateTime(currentTime);
+
+            const progressData = {
+                index,
+                notes,
+                collectedHints,
+                showNotes,
+                solved: index >= steps.length - 1,
+                lastUpdateTime: currentTime,
+            };
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(progressData));
+            console.log('Fortschritt gespeichert');
+        } catch (error) {
+            console.error('Fehler beim Speichern des Fortschritts:', error);
+        }
+    }, [index, notes, collectedHints, started]);
 
     useEffect(() => {
         if (!started) setStarted(true)
@@ -101,10 +149,20 @@ export default function Trail() {
         }
     };
 
+    const resetProgress = () => {
+        if (window.confirm('Möchtest du deinen Fortschritt wirklich zurücksetzen?')) {
+            localStorage.removeItem(STORAGE_KEY);
+            setIndex(0);
+            setNotes('');
+            setCollectedHints([]);
+            setSolved(false);
+            alert('Fortschritt zurückgesetzt');
+        }
+    };
+
     return (
         <>
             <div className="container">
-                {/* Header mit Utility Buttons */}
                 <div className="header-toolbar">
                     <button
                         className="notes-toggle-button"
@@ -121,6 +179,24 @@ export default function Trail() {
                             💡 {collectedHints.length}
                         </button>
                     )}
+                    <button
+                        className="reset-button"
+                        onClick={resetProgress}
+                        aria-label="Fortschritt zurücksetzen"
+                        title="Fortschritt zurücksetzen"
+                    >
+                        🔄
+                    </button>
+                </div>
+                <div className="progress-info">
+                    <small>
+                        Schritt {index + 1} von {steps.length}
+                        {lastUpdateTime && (
+                            <span className="save-indicator">
+                                • Gespeichert: {new Date(lastUpdateTime).toLocaleTimeString()}
+                            </span>
+                        )}
+                    </small>
                 </div>
 
                 <div className="progress-wrapper">
