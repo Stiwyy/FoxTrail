@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useFoxTrail } from '../FoxTrailContext'
+import Fuse from 'fuse.js' // Für die unscharfe Textsuche - installiere mit: npm install fuse.js
 
 const steps = [
     {
@@ -44,7 +45,9 @@ const steps = [
     }
 ]
 
+// Konstanten für localStorage-Schlüssel
 const STORAGE_KEY = 'foxTrail_progress';
+const TIMER_KEY = 'foxTrail_timer';
 
 export default function Trail() {
     const { started, setStarted, setSolved } = useFoxTrail()
@@ -57,6 +60,63 @@ export default function Trail() {
     const navigate = useNavigate()
     const [showMap, setShowMap] = useState(false)
     const [lastUpdateTime, setLastUpdateTime] = useState(new Date().toISOString())
+
+    const [showTimer, setShowTimer] = useState(true)
+    const [startTime, setStartTime] = useState(null)
+    const [currentTime, setCurrentTime] = useState(0)
+    const [stepStartTime, setStepStartTime] = useState(null)
+    const [stepTimes, setStepTimes] = useState([])
+
+    useEffect(() => {
+        try {
+            const savedTimerData = localStorage.getItem(TIMER_KEY);
+            if (savedTimerData) {
+                const timerData = JSON.parse(savedTimerData);
+                setStartTime(timerData.startTime);
+                setCurrentTime(timerData.currentTime || 0);
+                setStepTimes(timerData.stepTimes || []);
+                setStepStartTime(timerData.stepStartTime);
+                setShowTimer(timerData.showTimer !== undefined ? timerData.showTimer : true);
+            } else {
+                const now = Date.now();
+                setStartTime(now);
+                setStepStartTime(now);
+                setStepTimes(Array(steps.length).fill(0));
+            }
+        } catch (error) {
+            console.error('Fehler beim Laden der Timer-Daten:', error);
+            const now = Date.now();
+            setStartTime(now);
+            setStepStartTime(now);
+            setStepTimes(Array(steps.length).fill(0));
+        }
+
+        const timerInterval = setInterval(() => {
+            if (startTime) {
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                setCurrentTime(elapsed);
+            }
+        }, 1000);
+
+        return () => clearInterval(timerInterval);
+    }, []);
+
+    useEffect(() => {
+        if (startTime) {
+            try {
+                const timerData = {
+                    startTime,
+                    currentTime,
+                    stepTimes,
+                    stepStartTime,
+                    showTimer
+                };
+                localStorage.setItem(TIMER_KEY, JSON.stringify(timerData));
+            } catch (error) {
+                console.error('Fehler beim Speichern der Timer-Daten:', error);
+            }
+        }
+    }, [currentTime, startTime, stepTimes, stepStartTime, showTimer]);
 
     useEffect(() => {
         try {
@@ -97,7 +157,6 @@ export default function Trail() {
             };
 
             localStorage.setItem(STORAGE_KEY, JSON.stringify(progressData));
-            console.log('Fortschritt gespeichert');
         } catch (error) {
             console.error('Fehler beim Speichern des Fortschritts:', error);
         }
@@ -119,29 +178,89 @@ export default function Trail() {
         }
     }, [index])
 
+    useEffect(() => {
+        if (stepStartTime && index > 0) {
+            const timeSpent = Math.floor((Date.now() - stepStartTime) / 1000);
+
+            // Zeit für den vorherigen Schritt speichern
+            setStepTimes(prev => {
+                const newTimes = [...prev];
+                newTimes[index - 1] = timeSpent;
+                return newTimes;
+            });
+        }
+
+        setStepStartTime(Date.now());
+    }, [index]);
+
     const progress = ((index + 1) / steps.length) * 100;
-    const step = steps[index]
+    const step = steps[index];
+
+    const checkAnswer = (userInput) => {
+        const solution = steps[index].solution;
+
+        if (userInput.trim().toLowerCase() === solution.toLowerCase()) {
+            return true;
+        }
+
+        const options = {
+            includeScore: true,
+            threshold: 0,
+            keys: ['text']
+        };
+
+        const fuse = new Fuse([{ text: solution.toLowerCase() }], options);
+        const result = fuse.search(userInput.trim().toLowerCase());
+
+        return result.length > 0 && result[0].score < 0.4;
+    };
 
     const goNext = () => {
         if (steps[index].type === 'question') {
-            if (input.trim().toLowerCase() !== steps[index].solution.toLowerCase()) {
-                alert('Falsche Antwort')
-                return
+            if (!checkAnswer(input)) {
+                alert('Falsche Antwort');
+                return;
             }
-            setInput('')
+            setInput('');
         }
-        const next = index + 1
+
+        if (stepStartTime) {
+            const timeSpent = Math.floor((Date.now() - stepStartTime) / 1000);
+            setStepTimes(prev => {
+                const newTimes = [...prev];
+                newTimes[index] = timeSpent;
+                return newTimes;
+            });
+        }
+
+        const next = index + 1;
         if (next < steps.length) {
-            setIndex(next)
+            setIndex(next);
+            setStepStartTime(Date.now());
         } else {
-            setSolved(true)
-            navigate('/result')
+            const totalTime = Math.floor((Date.now() - startTime) / 1000);
+
+            setSolved(true);
+
+            try {
+                const finalTimerData = {
+                    startTime,
+                    endTime: Date.now(),
+                    totalTime,
+                    stepTimes
+                };
+                localStorage.setItem(TIMER_KEY, JSON.stringify(finalTimerData));
+            } catch (error) {
+                console.error('Fehler beim Speichern der finalen Timer-Daten:', error);
+            }
+
+            navigate('/result');
         }
-    }
+    };
 
     const goBack = () => {
-        if (index > 0) setIndex(index - 1)
-    }
+        if (index > 0) setIndex(index - 1);
+    };
 
     const handleKeyPress = (e) => {
         if (e.key === 'Enter' && steps[index].type === 'question') {
@@ -152,17 +271,39 @@ export default function Trail() {
     const resetProgress = () => {
         if (window.confirm('Möchtest du deinen Fortschritt wirklich zurücksetzen?')) {
             localStorage.removeItem(STORAGE_KEY);
+            localStorage.removeItem(TIMER_KEY);
             setIndex(0);
             setNotes('');
             setCollectedHints([]);
             setSolved(false);
+
+            const now = Date.now();
+            setStartTime(now);
+            setStepStartTime(now);
+            setCurrentTime(0);
+            setStepTimes(Array(steps.length).fill(0));
+
             alert('Fortschritt zurückgesetzt');
         }
+    };
+
+    const formatTime = (timeInSeconds) => {
+        if (!timeInSeconds && timeInSeconds !== 0) return "00:00";
+
+        const hours = Math.floor(timeInSeconds / 3600);
+        const minutes = Math.floor((timeInSeconds % 3600) / 60);
+        const seconds = timeInSeconds % 60;
+
+        if (hours > 0) {
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     };
 
     return (
         <>
             <div className="container">
+                {/* Header mit Utility Buttons */}
                 <div className="header-toolbar">
                     <button
                         className="notes-toggle-button"
@@ -180,6 +321,13 @@ export default function Trail() {
                         </button>
                     )}
                     <button
+                        className="timer-toggle-button"
+                        onClick={() => setShowTimer(v => !v)}
+                        aria-label={showTimer ? 'Timer ausblenden' : 'Timer anzeigen'}
+                    >
+                        {showTimer ? '⏱️' : '🕒'}
+                    </button>
+                    <button
                         className="reset-button"
                         onClick={resetProgress}
                         aria-label="Fortschritt zurücksetzen"
@@ -188,14 +336,25 @@ export default function Trail() {
                         🔄
                     </button>
                 </div>
+
+                {/* Timer-Anzeige */}
+                {showTimer && (
+                    <div className="timer-display">
+                        <div className="total-time">
+                            <span>Gesamtzeit:</span> {formatTime(currentTime)}
+                        </div>
+                        {stepTimes[index - 1] > 0 && (
+                            <div className="step-time">
+                                <span>Letzter Schritt:</span> {formatTime(stepTimes[index - 1])}
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Fortschrittsinfo */}
                 <div className="progress-info">
                     <small>
                         Schritt {index + 1} von {steps.length}
-                        {lastUpdateTime && (
-                            <span className="save-indicator">
-                                • Gespeichert: {new Date(lastUpdateTime).toLocaleTimeString()}
-                            </span>
-                        )}
                     </small>
                 </div>
 
