@@ -68,28 +68,41 @@ export default function Trail() {
     const timerIntervalRef = useRef(null);
 
     useEffect(() => {
+
+        const initTimer = () => {
+
+            if (timerIntervalRef.current) {
+                clearInterval(timerIntervalRef.current);
+            }
+
+            timerIntervalRef.current = setInterval(() => {
+                setTotalSeconds(prevSeconds => prevSeconds + 1);
+            }, 1000);
+        };
+
         try {
             const savedTimerData = localStorage.getItem(TIMER_KEY);
+
             if (savedTimerData) {
                 const timerData = JSON.parse(savedTimerData);
                 setTotalSeconds(timerData.totalSeconds || 0);
                 setStepTimes(timerData.stepTimes || Array(steps.length).fill(0));
                 setShowTimer(timerData.showTimer !== undefined ? timerData.showTimer : true);
-                setStepStartTime(Date.now());
             } else {
                 setTotalSeconds(0);
                 setStepTimes(Array(steps.length).fill(0));
-                setStepStartTime(Date.now());
             }
 
+            setStepStartTime(Date.now());
             setIsActive(true);
-
+            initTimer();
         } catch (error) {
             console.error('Fehler beim Laden der Timer-Daten:', error);
             setTotalSeconds(0);
             setStepTimes(Array(steps.length).fill(0));
             setStepStartTime(Date.now());
             setIsActive(true);
+            initTimer();
         }
 
         return () => {
@@ -100,9 +113,29 @@ export default function Trail() {
     }, []);
 
     useEffect(() => {
+        if (started && totalSeconds > 0) {
+            try {
+                const timerData = {
+                    totalSeconds,
+                    stepTimes,
+                    showTimer,
+                    lastSaved: Date.now()
+                };
+                localStorage.setItem(TIMER_KEY, JSON.stringify(timerData));
+            } catch (error) {
+                console.error('Fehler beim Speichern der Timer-Daten:', error);
+            }
+        }
+    }, [totalSeconds, stepTimes, showTimer, started]);
+
+    useEffect(() => {
         if (isActive) {
+            if (timerIntervalRef.current) {
+                clearInterval(timerIntervalRef.current);
+            }
+
             timerIntervalRef.current = setInterval(() => {
-                setTotalSeconds(seconds => seconds + 1);
+                setTotalSeconds(prevSeconds => prevSeconds + 1);
             }, 1000);
         } else if (timerIntervalRef.current) {
             clearInterval(timerIntervalRef.current);
@@ -114,21 +147,6 @@ export default function Trail() {
             }
         };
     }, [isActive]);
-
-    useEffect(() => {
-        if (isActive && started) {
-            try {
-                const timerData = {
-                    totalSeconds,
-                    stepTimes,
-                    showTimer
-                };
-                localStorage.setItem(TIMER_KEY, JSON.stringify(timerData));
-            } catch (error) {
-                console.error('Fehler beim Speichern der Timer-Daten:', error);
-            }
-        }
-    }, [totalSeconds, stepTimes, showTimer, isActive, started]);
 
     useEffect(() => {
         try {
@@ -143,6 +161,7 @@ export default function Trail() {
 
                 if (progress.solved) {
                     setSolved(true);
+                    setIsActive(false);
                 }
 
                 console.log(`Fortschritt geladen: Schritt ${progress.index + 1} von ${steps.length}`);
@@ -176,7 +195,7 @@ export default function Trail() {
 
     useEffect(() => {
         if (!started) setStarted(true)
-    }, [started, setStarted])
+    }, [started, setStarted]);
 
     useEffect(() => {
         const hints = steps[index].hints || []
@@ -188,7 +207,7 @@ export default function Trail() {
                 return [...prev, ...newOnes]
             })
         }
-    }, [index])
+    }, [index]);
 
     useEffect(() => {
         if (stepStartTime && index > 0) {
