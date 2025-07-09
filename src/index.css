@@ -861,3 +861,74 @@ body.dark .reset-button:active {
 .just-saved {
   animation: flash 1s ease-in-out;
 }
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.form-title {
+  font-size: 1.5rem;
+  margin: 0 0 8px 0;
+  color: var(--primary);
+}
+
+.form-description {
+  margin: 0 0 16px 0;
+  font-size: 0.95rem;
+  opacity: 0.85;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.form-field label {
+  margin-bottom: 6px;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.form-field input {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  background-color: white;
+  font-size: 1rem;
+}
+
+body.dark .form-field input {
+  background-color: #333;
+  border-color: #555;
+  color: #eee;
+}
+
+.form-submit-button {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 12px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  align-self: flex-end;
+  margin-top: 8px;
+}
+
+.form-submit-button:hover {
+  background-color: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+.form-submit-button:active {
+  transform: translateY(0);
+}
