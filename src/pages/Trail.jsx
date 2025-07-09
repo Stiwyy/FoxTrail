@@ -306,7 +306,9 @@ export default function Trail() {
                     setSolved(true)
                     setIsActive(false)
                 }
-                console.log(`Fortschritt geladen: Schritt ${progress.index + 1} von ${steps.length}`)
+                console.log(
+                    `Fortschritt geladen: Schritt ${progress.index + 1} von ${steps.length}`
+                )
             }
         } catch (error) {
             console.error('Fehler beim Laden des Fortschritts:', error)
@@ -473,7 +475,6 @@ export default function Trail() {
     return (
         <>
             <div className="container">
-                {/* Header mit Utility Buttons */}
                 <div className="header-toolbar">
                     <button
                         className="notes-toggle-button"
@@ -505,8 +506,6 @@ export default function Trail() {
                         🔄
                     </button>
                 </div>
-
-                {/* Timer-Anzeige */}
                 {showTimer && (
                     <div className="timer-display">
                         <div className="total-time">
@@ -522,21 +521,17 @@ export default function Trail() {
                         )}
                     </div>
                 )}
-
-                {/* Fortschrittsinfo */}
                 <div className="progress-info">
                     <small>
                         Schritt {index + 1} von {steps.length}
                     </small>
                 </div>
-
                 <div className="progress-wrapper">
                     <div
                         className="progress-bar"
                         style={{ width: `${((index + 1) / steps.length) * 100}%` }}
                     />
                 </div>
-
                 {step.type === 'story' ? (
                     <p className="text">{step.content}</p>
                 ) : step.type === 'question' ? (
@@ -577,8 +572,6 @@ export default function Trail() {
                         </div>
                     </div>
                 ) : null}
-
-                {/* Karte anzeigen Button */}
                 <div className="map-section">
                     <button
                         className="map-toggle-button"
@@ -587,7 +580,6 @@ export default function Trail() {
                         {showMap ? '📍 Karte verbergen' : '🗺️ Karte anzeigen'}
                     </button>
                 </div>
-
                 {showMap && (
                     <div className="map-container">
                         <iframe
@@ -601,8 +593,6 @@ export default function Trail() {
                         />
                     </div>
                 )}
-
-                {/* Notizen */}
                 {showNotes && (
                     <textarea
                         className="notes"
@@ -611,8 +601,6 @@ export default function Trail() {
                         onChange={(e) => setNotes(e.target.value)}
                     />
                 )}
-
-                {/* Navigation Buttons */}
                 <div className="navigation-toolbar">
                     <button
                         className="back-button"
@@ -626,8 +614,6 @@ export default function Trail() {
                     </button>
                 </div>
             </div>
-
-            {/* Hinweise Modal */}
             {showHints && (
                 <div className="modal-overlay" onClick={() => setShowHints(false)}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -650,7 +636,10 @@ export default function Trail() {
                                         src={h.content}
                                         alt={`Hinweis ${i + 1}`}
                                         className="hint-image"
-                                        onClick={() => setEnlargedImage(h.content)}
+                                        onClick={() => {
+                                            setEnlargedImage(h.content)
+                                            setShowHints(false)
+                                        }}
                                     />
                                 )
                             )}
@@ -658,8 +647,6 @@ export default function Trail() {
                     </div>
                 </div>
             )}
-
-            {/* Vergrößerte Bildanzeige */}
             {enlargedImage && (
                 <div
                     className="modal-overlay image-viewer"
