@@ -932,3 +932,54 @@ body.dark .form-field input {
 .form-submit-button:active {
   transform: translateY(0);
 }
+.hint-image {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 8px;
+  margin: 8px 0;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.hint-image:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.image-viewer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.85);
+  z-index: 1100;
+}
+
+.enlarged-image-container {
+  position: relative;
+  max-width: 90%;
+  max-height: 90%;
+}
+
+.enlarged-image {
+  max-width: 100%;
+  max-height: 90vh;
+  border-radius: 4px;
+  object-fit: contain;
+}
+
+.enlarged-image-container .modal-close {
+  position: absolute;
+  top: -15px;
+  right: -15px;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
