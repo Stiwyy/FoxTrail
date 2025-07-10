@@ -18,7 +18,7 @@ const steps = [
         id: 'q-1',
         type: 'question',
         riddle:
-            'An der Wand hängt ein Plakat: "Die Geschichte der digitalen Evolution". Ein Eintrag wirkt seltsam deplatziert und enthält eine auffällige Grafik. Welches berühmte Kunstwerk wird dort angedeutet?',
+            'An der Wand hängt ein Plakat: "Die Geschichte der digitalen Evolution". Der Eintrag bei 1982 wirkt seltsam deplatziert und enthält eine auffällige Grafik. Welches berühmte Kunstwerk wird dort angedeutet?',
         solution: 'Die Erschaffung Adams',
     },
     // Part 2: Story – Ein geistesblitz
@@ -26,7 +26,7 @@ const steps = [
         id: 'story-2',
         type: 'story',
         content:
-            'Die Grafik lässt dich stutzen – sie erinnert dich an ein weltbekanntes Kunstwerk. Und plötzlich macht es Klick: Es gab doch kürzlich einen Einbruch im Kunstmuseum Winterthur. Ein antiker Dolch wurde gestohlen. Ist das etwa... derselbe? Du verlässt das BBW und machst dich auf den Weg ins Museum.',
+            'Die Grafik lässt dich stutzen – sie erinnert dich an ein weltbekanntes Kunstwerk. Und plötzlich macht es Klick: Es gab doch kürzlich einen Einbruch im Kunstmuseum Winterthur. Ein antiker Dolch wurde gestohlen. Ist das etwa... derselbe? Du verlässt das BBW und machst dich auf den Weg zum nächsten Eingang ins Museum.',
     },
     // Part 3: Story – Ankunft im Museum
     {
@@ -40,7 +40,7 @@ const steps = [
         id: 'q-2',
         type: 'question',
         riddle:
-            'Der Direktor fordert dich auf, die Inschrift auf dem Buch der unteren linken Statue aussem beim Eingang zu lesen. Was steht dort?',
+            'Der Direktor fordert dich auf, die Inschrift auf dem Buch der unteren linken Statue aussen beim Eingang zu lesen. Was steht dort auf unserer Sprache?',
         solution: 'Die Ursachen der Dinge erkennen',
     },
     // Part 4: Story – Die nächste Spur
@@ -54,7 +54,7 @@ const steps = [
         id: 'story-5',
         type: 'story',
         content:
-            'Du stehst vor dem auffälligen roten Plexiglaswürfel, der in der Morgensonne matt schimmert. Eine seltsame Ruhe liegt über dem Ort. Du gehst näher heran, deine Augen suchen nach Hinweisen. Am Sockel des Würfels fällt dir ein kleines Metallschild auf – festgenietet, leicht angelaufen. Du wischst mit dem Ärmel darüber. Neben dem Namen des Künstlers steht da noch etwas, eingerahmt in typischen Schweizer Anführungszeichen: «bei Rebekka». Du runzelst die Stirn. "Rebekka…?" murmelst du leise. Irgendetwas daran kommt dir bekannt vor. Du trittst einen Schritt zurück, betrachtest die Szene noch einmal. Und dann macht es Klick.',
+            'Du stehst vor dem auffälligen roten Plexiglaswürfel, der in der Morgensonne matt schimmert. Eine seltsame Ruhe liegt über dem Ort. Du gehst näher heran, deine Augen suchen nach Hinweisen. Am Sockel des Würfels fällt dir ein kleines Metallschild auf – festgenietet, leicht angelaufen. Du wischst mit dem Ärmel darüber. Neben dem Namen des Künstlers steht da noch etwas, eingerahmt in typischen Schweizer Anführungszeichen.',
     },
     {
         id: 'q-3',
@@ -67,7 +67,7 @@ const steps = [
         id: 'story-6',
         type: 'story',
         content:
-            'Rebekka... Oder war es Rebecca? Dann fällt dir wieder ein: Rebecca Schneebeli. Der Name ist dir bei einer früheren Recherche schon einmal begegnet – eine Künstlerin? Richterin?! Du bist dir nicht mehr ganz sicher, aber das Gefühl ist klar: Sie ist der nächste Anhaltspunkt. Du wendest dich gerade ab, als ein leiser Hauch Wind dir etwas an die Füße weht. Ein einzelnes Blütenblatt, hellrosa, makellos, fast zu perfekt. Du beugst dich hinunter. Kein Strauch, keine Blume in der Nähe scheint es verloren zu haben. Vielleicht bedeutungslos. Vielleicht auch nicht. Du steckst es ein – Gewohnheit, Vorsicht oder Instinkt – du wirst es später herausfinden.',
+            '«bei Rebekka». Du runzelst die Stirn. "Rebekka…?" murmelst du leise. Irgendetwas daran kommt dir bekannt vor. Du trittst einen Schritt zurück, betrachtest die Szene noch einmal. Und dann macht es Klick. Rebekka... Oder war es Rebecca? Dann fällt dir wieder ein: Rebecca Schneebeli. Der Name ist dir bei einer früheren Recherche schon einmal begegnet – eine Künstlerin? Richterin?! Du bist dir nicht mehr ganz sicher, aber das Gefühl ist klar: Sie ist der nächste Anhaltspunkt. Du wendest dich gerade ab, als ein leiser Hauch Wind dir etwas an die Füße weht. Ein einzelnes Blütenblatt, hellrosa, makellos, fast zu perfekt. Du beugst dich hinunter. Kein Strauch, keine Blume in der Nähe scheint es verloren zu haben. Vielleicht bedeutungslos. Vielleicht auch nicht. Du steckst es ein – Gewohnheit, Vorsicht oder Instinkt – du wirst es später herausfinden.',
         hints: [
             {
                 type: 'image',
@@ -79,7 +79,7 @@ const steps = [
         id: 'story-7',
         type: 'story',
         content:
-            'Das Bundesgericht erhebt sich mit strenger Würde vor dir. Doch heute wirkt der Garten davor seltsam friedlich. Du gehst langsam den Weg entlang, als dich ein Farbtupfer aufhorchen lässt – ein leuchtendes Blau zwischen dem Grün. Hortensien. Du gehst näher und erkennst die Blütenform – identisch mit dem Blatt, das du eingesteckt hast. Deine Gedanken überschlagen sich, als eine Stimme dich unterbricht: "Wunderschöne Blumen, nicht wahr?" Ein älterer Mann mit wettergegerbtem Gesicht und Arbeitskleidung tritt aus dem Schatten. Ein Gärtner. Er schüttelt den Kopf. "Schande, was die Vandalen hier angerichtet haben. Haben alles zertrampelt. Und dann auch noch ihren Müll liegen lassen…"',
+            'Das Bundesgericht erhebt sich mit strenger Würde vor dir. Doch heute wirkt der Garten davor seltsam friedlich. Du gehst langsam den Weg entlang, als dich ein Farbtupfer aufhorchen lässt – ein leuchtendes Pink zwischen dem Grün. Hortensien. Du gehst näher und erkennst die Blütenform – identisch mit dem Blatt, das du eingesteckt hast. Deine Gedanken überschlagen sich, als eine Stimme dich unterbricht: "Wunderschöne Blumen, nicht wahr?" Ein älterer Mann mit wettergegerbtem Gesicht und Arbeitskleidung tritt aus dem Schatten. Ein Gärtner. Er schüttelt den Kopf. "Schande, was die Vandalen hier angerichtet haben. Haben alles zertrampelt. Und dann auch noch ihren Müll liegen lassen…"',
     },
     {
         id: 'q-4',
@@ -104,14 +104,14 @@ const steps = [
         id: 'story-9',
         type: 'story',
         content:
-            'Frustriert, aber nicht entmutigt, folgst du einem neuen Hinweis: Das Kino. Dort soll es laut Gärtner auch Randale gegeben haben. Du trittst ein. Der Geruch von Popcorn hängt in der Luft – künstlich, süsslich, klebrig. Deine Schritte knarzen auf dem dichten Teppich. "Hall of Kiwi" steht gross darauf, in einer Art, die an Hollywood erinnern will – aber eher ein müder Abklatsch davon ist. Du verziehst leicht das Gesicht. In dem Moment tritt ein Mann in Anzug an dich heran – der Kinomanager. Du erklärst kurz dein Anliegen, doch er winkt ab. "Tut mir leid. Ich kann die Besucherlisten nicht abrufen. Passwort vergessen."',
+            'Frustriert, aber nicht entmutigt, folgst du einem neuen Hinweis: Das Kino. Dort soll es laut Gärtner auch Randale gegeben haben. Du trittst ein. Der Geruch von Popcorn hängt in der Luft – künstlich, süsslich, klebrig. Deine Schritte knarzen auf dem dichten Teppich. Ein text geschrieben in einer Art, die an Hollywood erinnern will – aber eher ein müder Abklatsch davon ist. Du verziehst leicht das Gesicht. In dem Moment tritt ein Mann in Anzug an dich heran – der Kinomanager. Du erklärst kurz dein Anliegen, doch er winkt ab. "Tut mir leid. Ich kann die Besucherlisten nicht abrufen. Passwort vergessen."',
     },
     {
         id: 'q-5',
         type: 'question',
         riddle:
-            'Was könnte das Passwort des Kino-Managers sein? (Hinweis: Kombiniere den Teppichtext mit den Zahlen in den heutigen Filmtiteln)',
-        solution: 'HALLOFKIWI36',
+            'Was könnte das Passwort des Kino-Managers sein? (Hinweis: Teppichtext)',
+        solution: 'HALLOFKIWI',
     },
     {
         id: 'story-10',
@@ -143,20 +143,20 @@ const steps = [
         id: 'story-12',
         type: 'story',
         content:
-            'Bier... und danach? Klar: Zähneputzen. Und was eignet sich besser zur Erinnerung daran als eine riesige Zahnbürste aus Holz? Du findest sie neben dem Spielplatz. Die Borsten sind auffällig – und zählen lohnt sich. Vielleicht steckt darin das Alter des Täters?',
+            'Bier... und danach? Klar: Zähneputzen. Und was eignet sich besser zur Erinnerung daran als eine riesige Zahnbürste aus Holz? Du findest sie in der Nähe des spielplatzes richtung norden dem Spielplatz. Die Borsten sind auffällig – und zählen lohnt sich. Vielleicht steckt darin das Alter des Täters?',
     },
     {
         id: 'q-8',
         type: 'question',
         riddle:
             'Wie viele Borsten hat die grosse Holzzahnbürste beim Spielplatz?',
-        solution: '19',
+        solution: '20',
     },
     {
         id: 'story-13',
         type: 'story',
         content:
-            'Mit allen Hinweisen im Gepäck machst du dich auf den Weg zurück zum BBW. Die Puzzleteile fügen sich zusammen: Seppli Fisch, 19 Jahre alt. Er muss der Täter sein! Nun kannst du deinen Bericht abschließen und den Fall lösen.',
+            'Mit allen Hinweisen im Gepäck machst du dich auf den Weg zurück zum BBW. Die Puzzleteile fügen sich zusammen: Er muss der Täter sein! Nun kannst du deinen Bericht abschließen und den Fall lösen.',
     },
     {
         id: 'form-1',
